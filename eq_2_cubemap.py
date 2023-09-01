@@ -1,7 +1,25 @@
-import numpy as np
 from PIL import Image
+import numpy as np
 import py360convert
 from pathlib import Path
+
+def flip_horizontal(image):
+    return image.transpose(Image.FLIP_LEFT_RIGHT)
+
+def rotate_image(image, angle):
+    """
+    Rotates an image by the specified angle.
+    Can handle both PIL Image object and numpy ndarray.
+    :param image: PIL Image object or numpy ndarray
+    :param angle: Angle in degrees for rotation
+    :return: Rotated object (same type as input)
+    """
+    if isinstance(image, Image.Image):
+        return image.rotate(angle)
+    elif isinstance(image, np.ndarray):
+        return np.array(Image.fromarray(image).rotate(angle))
+    else:
+        raise TypeError(f"Cannot handle image type {type(image)}")
 
 input_dir = "eqs_upres"
 output_dir = "cubemaps_final"
@@ -16,7 +34,7 @@ for file in files:
     print(" -- ", str(file)) 
     
     # Convert the equirectangular image to cube (dice format)
-    cube_dice = py360convert.e2c(eq_img, face_w=1024)  # width should be 4 times the individual face size
+    cube_dice = py360convert.e2c(eq_img, face_w=1024)
 
     # Convert the cube dice to horizontal format (this is an intermediate step)
     cube_h = py360convert.cube_dice2h(cube_dice)
@@ -24,17 +42,22 @@ for file in files:
     # Convert the cube horizontal to a list of individual faces
     cube_dict = py360convert.cube_h2dict(cube_h)
 
-    # Map the face index to its name based on the three.js code you provided
-    face_map = {0: 'U', 1: 'L', 2: 'F', 3: 'R', 4: 'B', 5: 'D'}
+    # Map the face index to its name
+    face_map = {0: 'U', 1: 'F', 2: 'R', 3: 'B', 4: 'L', 5: 'D'}
 
-    # Save each face with its corresponding name
+    # Perform operations on each face and save it
     file_name = file.stem
-    for faceI, face_img in face_map.items():
-        output_name = f"{output_dir}/{file_name}_face{faceI}.jpg"
-        print(" -- -- ", output_name, )
-        Image.fromarray(cube_dict[face_map[faceI]]).save(output_name)
+    for faceI, face_name in face_map.items():
+        if face_name == 'B':
+            cube_dict[face_name] = np.array(flip_horizontal(Image.fromarray(cube_dict[face_name])))
+        elif face_name == 'R':
+            cube_dict[face_name] = np.array(flip_horizontal(Image.fromarray(cube_dict[face_name])))
+        elif face_name == 'U':
+            cube_dict[face_name] = np.array(flip_horizontal(Image.fromarray(cube_dict[face_name])))
+            cube_dict[face_name] = np.array(rotate_image(Image.fromarray(cube_dict[face_name]), 180))
 
+        output_name = f"{output_dir}/{file_name}v5_face{faceI}.jpg"
+        print(" -- -- ", output_name)
+        Image.fromarray(cube_dict[face_name]).save(output_name)
 
 print("Conversion completed!")
-
-
