@@ -3,6 +3,9 @@ import numpy as np
 import py360convert
 from pathlib import Path
 
+# Set the maximum number of pixels allowed
+Image.MAX_IMAGE_PIXELS = None  # This removes the limit completely
+
 def flip_horizontal(image):
     return image.transpose(Image.FLIP_LEFT_RIGHT)
 
@@ -21,11 +24,24 @@ def rotate_image(image, angle):
     else:
         raise TypeError(f"Cannot handle image type {type(image)}")
 
-input_dir = "eqs_upres"
-output_dir = "cubemaps_final"
+input_dir = "eqs_tpz"
+output_dir = "cubemaps"
 
 # Get all equirectangular images in the input directory
-files = list(Path(input_dir).glob("*.jpg"))
+
+# Function to get all equirectangular images in the input directory
+def get_files(directory, extensions):
+    all_files = []
+    for ext in extensions:
+        all_files.extend(Path(directory).glob(f"*.{ext}"))
+        all_files.extend(Path(directory).glob(f"*.{ext.upper()}"))
+    return all_files
+
+# Supported extensions
+extensions = ['jpg', 'png']
+
+# Get all equirectangular images in the input directory
+files = get_files(input_dir, extensions)
 print("Converting", len(files), "files")
 
 for file in files:
@@ -34,7 +50,8 @@ for file in files:
     print(" -- ", str(file)) 
     
     # Convert the equirectangular image to cube (dice format)
-    cube_dice = py360convert.e2c(eq_img, face_w=1024)
+    cube_dice = py360convert.e2c(eq_img, face_w=4096)
+    # cube_dice = py360convert.e2c(eq_img, face_w=1024)
 
     # Convert the cube dice to horizontal format (this is an intermediate step)
     cube_h = py360convert.cube_dice2h(cube_dice)
@@ -56,7 +73,7 @@ for file in files:
             cube_dict[face_name] = np.array(flip_horizontal(Image.fromarray(cube_dict[face_name])))
             cube_dict[face_name] = np.array(rotate_image(Image.fromarray(cube_dict[face_name]), 180))
 
-        output_name = f"{output_dir}/{file_name}v5_face{faceI}.jpg"
+        output_name = f"{output_dir}/{file_name}_face{faceI}.jpg"
         print(" -- -- ", output_name)
         Image.fromarray(cube_dict[face_name]).save(output_name)
 

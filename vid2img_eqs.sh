@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p eqs
+mkdir -p eqs_orig
 
 for file in 360videos/*
 do
@@ -11,6 +11,6 @@ do
     fname="${basefile%.mp4}"
     fname="${fname%.mov}"
 
-    ffmpeg -i "$file" -vf "fps=4" -pix_fmt bgr8 "eqs/${fname}_frame_%05d.jpg"
+    ffmpeg -i "$file" -vf "fps=3" -pix_fmt bgr8 "eqs_orig/${fname}_frame_%05d.png"
 done
 
