@@ -1,26 +1,25 @@
 #!/bin/bash
 
-# Directory containing the .jpg files
-dir="./cubemaps_final"
+# Check if exactly two arguments are given
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <directory_path> <version_string>"
+    exit 1
+fi
 
-# Loop over all .jpg files in the specified directory that have "_face" in their names
-for file in "$dir"/*_face*.jpg; do
-  # Extract the filename without the extension
-  filename=$(basename -- "$file")
-  extension="${filename##*.}"
-  filename="${filename%.*}"
+# Assign arguments to variables for better readability
+directory_path="$1"
+version_string="$2"
 
-  # Extract prefix and suffix based on "_face"
-  prefix="${filename%%_face*}"
-  suffix="${filename#*_face}"
-
-  # New filename with "v2" added before "_face"
-  new_filename="${prefix}v2_face${suffix}.${extension}"
-  
-  # Full path for the new filename
-  new_filepath="$dir/$new_filename"
-
-  # Rename the file
-  mv "$file" "$new_filepath"
+# Iterate over all .jpg files in the specified directory
+for file in "$directory_path"/*.jpg; do
+    # Extract the file name without the extension
+    filename=$(basename "$file" .jpg)
+    
+    # If the file doesn't already have a version, rename it
+    if [[ "$filename" != *v* ]]; then
+        new_filename="${filename}_${version_string}.jpg"
+        mv "$file" "$directory_path/$new_filename"
+        echo "Renamed $file to $new_filename"
+    fi
 done
 
