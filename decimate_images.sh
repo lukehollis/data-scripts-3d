@@ -13,7 +13,7 @@ cd "$1" || exit
 count=0
 
 # Find and sort all PNG files, then iterate over them
-find . -maxdepth 1 -type f -iname '*.png' | sort | while read -r file; do
+find . -maxdepth 1 -type f -iname 'VID*.jpg' | sort | while read -r file; do
     # Increment the counter
     let count+=1
     

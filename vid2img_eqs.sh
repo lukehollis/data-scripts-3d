@@ -11,6 +11,6 @@ do
     fname="${basefile%.mp4}"
     fname="${fname%.mov}"
 
-    ffmpeg -i "$file" -vf "fps=3" -pix_fmt bgr8 "eqs_orig/${fname}_frame_%05d.png"
+    ffmpeg -i "$file" -vf "fps=1" -pix_fmt bgr8 "eqs_orig/${fname}_frame_%05d.jpg"
 done
 
