@@ -56,8 +56,12 @@ for file in files:
     
 
     # Load the equirectangular image
-    eq_img = np.array(Image.open(str(file)))
-    print(" -- ", str(file)) 
+    try:
+        eq_img = np.array(Image.open(str(file)))
+        print(" -- ", str(file)) 
+    except Exception as e:
+        print(" -- error with file", file, e)
+        continue
     
     # Convert the equirectangular image to cube (dice format)
     cube_dice = py360convert.e2c(eq_img, face_w=4096)
