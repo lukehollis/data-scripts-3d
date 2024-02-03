@@ -45,6 +45,16 @@ files = get_files(input_dir, extensions)
 print("Converting", len(files), "files")
 
 for file in files:
+
+    file_name = file.stem
+    output_name_check = f"{output_dir}/{file_name}_face0.jpg"
+    
+    # Check if the first face already exists, skip the whole file if it does
+    if Path(output_name_check).exists():
+        print(f"Skipping {file_name}, faces already generated.")
+        continue
+    
+
     # Load the equirectangular image
     eq_img = np.array(Image.open(str(file)))
     print(" -- ", str(file)) 
