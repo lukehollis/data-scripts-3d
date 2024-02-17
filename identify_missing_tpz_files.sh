@@ -22,6 +22,10 @@ for subDir in "$mainDir"*/; do
     if [ ! -d "$targetDir" ]; then
         echo "Creating directory $targetDir"
         mkdir "$targetDir"
+    # else
+        # If eqs_to_tpz exists, delete all files within it
+        # echo "Deleting existing files in $targetDir"
+        # rm -f "${targetDir}"*
     fi
 
     # Iterate through files in eqs_orig
@@ -31,19 +35,28 @@ for subDir in "$mainDir"*/; do
         baseName="${filename%.*}"
         extension="${filename##*.}"
         extensionLower=$(echo "$extension" | tr '[:upper:]' '[:lower:]') # Convert extension to lowercase
+        targetFile=""
 
-        # Check if the file does not exist in eqs_tpz
-        if [ ! -f "${tpzDir}${filename}" ]; then
-            # Check if the file is a PNG (case-insensitive)
+        # Determine the target filename based on extension
+        if [ "$extensionLower" = "png" ]; then
+            targetFile="${targetDir}${baseName}.jpg"
+        else
+            targetFile="${targetDir}${filename}"
+        fi
+
+        # Check if the file does not exist in eqs_tpz and eqs_to_tpz
+        if [ ! -f "${tpzDir}${filename}" ] && [ ! -f "$targetFile" ]; then
             if [ "$extensionLower" = "png" ]; then
-                # Convert PNG to JPG
+                # Convert PNG to JPG and copy to eqs_to_tpz
                 echo "Converting $filename to JPG and copying to $targetDir"
-                convert "$origFile" "${targetDir}${baseName}.jpg"
+                convert "$origFile" "$targetFile"
             else
                 # Copy the file to eqs_to_tpz
                 echo "Copying $filename to $targetDir"
                 cp "$origFile" "$targetDir"
             fi
+        else
+            echo "Skipping $filename, already processed."
         fi
     done
 done

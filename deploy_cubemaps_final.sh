@@ -5,4 +5,5 @@
 DEST_PATH="gs://mused/spaceshare"
 
 # Copy files to the destination
-gcloud storage cp -r cubemaps/* "$DEST_PATH"
+npm run build
+gcloud storage cp -r cubemaps_final/* "$DEST_PATH"
