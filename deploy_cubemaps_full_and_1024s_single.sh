@@ -5,11 +5,9 @@ upload_files_from_dir() {
   local dir_name="$1"  # Directory to process
   echo "Processing directory: $dir_name"
   # Find and upload each .jpg file in the directory
-  find "$dir_name" -type f -name '*.jpg' | while read filename; do
-    echo "Uploading $filename to gs://mused/spaceshare"
-    # Use gcloud storage cp command to upload the file
-    gcloud storage cp "$filename" "gs://mused/spaceshare/$(basename "$filename")"
-  done
+
+  # Use gcloud storage cp command to upload the file
+  gcloud storage cp "$dir_name/*.jpg" gs://mused/spaceshare/
 }
 
 # Upload files from cubemaps if it exists
