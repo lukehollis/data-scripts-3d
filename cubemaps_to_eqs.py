@@ -50,13 +50,13 @@ def convert_cubemap_to_eq(cube_images, output_name):
 
 def get_cube_images_for_id(image_id):
     """Returns a sorted list of cube face images for a specific ID."""
-    return sorted([os.path.join(CUBEMAP_DIR, f"{image_id}_face{i}_2k.jpg") for i in range(6)])
+    return sorted([os.path.join(CUBEMAP_DIR, f"{image_id}_face{i}.jpg") for i in range(6)])
 
 def main():
     # Get unique image IDs
     image_ids = set()
     for filename in os.listdir(CUBEMAP_DIR):
-        match = re.match(r"(\w+)_face\d_2k.jpg", filename)
+        match = re.match(r"(\w+)_face\d.jpg", filename)
         if match:
             image_ids.add(match.group(1))
 
