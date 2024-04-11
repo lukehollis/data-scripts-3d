@@ -4,7 +4,7 @@ from pathlib import Path
 
 # Define the input and output directories
 input_dir = "eqs"
-output_dir = "planar"
+output_dir = "rects"
 
 # Create the output directory if it doesn't exist
 if not os.path.exists(output_dir):
