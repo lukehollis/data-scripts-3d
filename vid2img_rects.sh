@@ -12,5 +12,5 @@ for video in videos/*.mov; do
   mkdir -p "rects/$filename"
   
   # Use ffmpeg to export frames as JPG images
-  ffmpeg -i "$video" -vf fps=1 "rects/$filename/$filename%04d.jpg"
+  ffmpeg -i "$video" -vf fps=1 "rects/$filename%04d.jpg"
 done
