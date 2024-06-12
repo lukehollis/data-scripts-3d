@@ -8,9 +8,12 @@ def remove_thumbnail_data(input_file):
         data = json.load(file)
 
     # Process each item in the JSON data
-    for item in data:
-        if "thumbnail" in item:
-            item["thumbnail"] = ""
+    for model in data.get("models", []):
+        if "thumbnail" in model:
+            model["thumbnail"] = ""
+        for tourpoint in model.get("tourpoints", []):
+            if "thumbnail" in tourpoint:
+                tourpoint["thumbnail"] = ""
 
     # Create output file name
     base_name, ext = os.path.splitext(input_file)
