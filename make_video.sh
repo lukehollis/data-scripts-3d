@@ -9,8 +9,8 @@ echo "Creating file list..."
 # Clear the filelist.txt if it exists
 > filelist.txt
 
-# Add each video file to filelist.txt
-for file in 00_compressed_enchanted_forest.mp4 01_compressed_winter_forest.mp4 02_compressed_gaussian_splat.mp4 03_compressed_airport.mp4 04_compressed_pixelart_romans.mp4 05_compressed_museum_giftstore.mp4; do
+# Find all MP4 files, sort them, and add to filelist.txt
+for file in $(ls -1 *.mp4 | sort); do
     echo "file '$file'" >> filelist.txt
 done
 
