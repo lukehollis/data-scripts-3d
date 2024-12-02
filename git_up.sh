@@ -10,24 +10,30 @@
 gcm() {
     # Function to generate commit message
     generate_commit_message() {
-        git_diff=$(git diff --cached | head -c 1000000)
+        # First try to get a summary of changes
+        files_changed=$(git diff --cached --numstat | wc -l)
+        summary=$(git diff --cached --stat | tail -n1)
+        
+        # Get a truncated diff, but much smaller than before
+        git_diff=$(git diff --cached | head -c 50000)
+        
         # If the diff is empty, exit early
         if [ -z "$git_diff" ]; then
             echo "No changes to commit"
             exit 0
         fi
-        # Add a warning if the diff was truncated
-        if [ ${#git_diff} -ge 1000000 ]; then
-            echo "Warning: Changes are too large, diff has been truncated for commit message generation"
-        fi
-        # Here's the fix - properly escape the diff and include it in the prompt
-        llm "Below is a diff of all staged changes, coming from the command 'git diff --cached':
+
+        # Construct a more informative prompt with the summary
+        llm "I have changes affecting $files_changed files. Here's the summary:
+$summary
+
+And here's a truncated diff of the changes:
 
 \`\`\`
 $git_diff
 \`\`\`
 
-Write a concise commit message for these changes using less than 10 words. Use emoji when appropriate."
+Write a concise commit message for these changes using less than 10 words. Use emoji when appropriate. Focus on the main purpose of the changes."
     }
 
     # Function to read user input compatibly with both Bash and Zsh
